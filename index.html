@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lab 1</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <form class="my-form" id="form" onkeyup="highlightElement()" name="theForm" action="#s">
+            <div class="form-group">
+                <label>Name:</label>
+                <input type="text" name="name" placeholder="Enter name here..." id="name">
+            </div>
+            <!-- <input type="submit" class="button" value="Search!" > -->
+        </form>
+
+        <div class="list">
+            <h2>Names</h2>
+            <ul id="lists">
+                <li>Moe</li>
+                <li>Joe</li>
+                <li>Zizo</li>
+                <li>Fadi</li>
+                <li>Manta</li>
+                <li>Omar</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        var memo;
+        function dp(idx1,idx2,length1,length2,s1,s2){
+            if (idx1 == length1)
+			    return length2 - idx2;
+		    if (idx2 == length2)
+			    return length1 - idx1;
+		    if (memo[idx1][idx2] != -1)
+			    return memo[idx1][idx2];
+		    var optimum = 0;
+		    if (s1.charAt(idx1) == s2.charAt(idx2))
+			    optimum = dp(idx1 + 1, idx2 + 1,length1,length2,s1,s2);
+		    else
+			    optimum = 1 + Math.min(dp(idx1 + 1, idx2 + 1,length1,length2,s1,s2), Math.min(dp(idx1 + 1, idx2,length1,length2,s1,s2), dp(idx1, idx2 + 1,length1,length2,s1,s2)));
+		    return memo[idx1][idx2] = optimum;
+        }
+        function highlightElement(){
+        
+            var input=document.getElementById("input");
+            var searchedName=document.forms["theForm"]["name"].value;
+            var lists=document.getElementById("lists");
+            var elements=lists.getElementsByTagName("li");
+            var backUp=[];
+            var min=1000;
+            if(searchedName=="")
+                for(var i=0;i<elements.length;i++)
+                    elements[i].style.display="";
+            else{
+                memo=new Array(searchedName.length);
+                var optimum=new Array(elements.length);
+                for(var i=0;i<elements.length;i++){
+                    for(var j=0;j<memo.length;j++){
+                        memo[j]=new Array(elements[i].textContent.length);
+                    }
+                    for(var j=0;j<memo.length;j++){
+                        for(var k=0;k<memo[j].length;k++){
+                            memo[j][k]=-1;
+                        }
+                    }
+                    optimum[i]=dp(0,0,searchedName.length,elements[i].textContent.length,searchedName,elements[i].textContent);
+                    if(optimum[i]<min)
+                        min=optimum[i];
+                }
+            for(var i=0;i<elements.length;i++)
+                console.log(elements[i].textContent+" "+optimum[i]);
+            if(min<=searchedName.length){
+                for(var i=0;i<elements.length;i++){
+                    console.log(optimum[i]);
+                    if(optimum[i]<=min+2&&min!=1000&&optimum[i]<elements[i].textContent.length&&optimum[i]==min)
+                        elements[i].style.display="";
+                    else
+                        elements[i].style.display="none";
+                }
+            }
+        }
+    }
+    </script>
+</body>
+</html>
